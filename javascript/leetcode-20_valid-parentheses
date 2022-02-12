@@ -33,3 +33,29 @@ const isValid = function(str) {
   console.log(stack);
   return stack.length === 0;
 }
+
+
+/*
+012345
+(()[])
+
+i=0:
+	stack-> (
+i=1:
+	stack-> ((
+i=2:
+	str[2]==) closing. if top of stack == opening of same flavor, pop the top.
+	stack-> (
+i=3:
+	stack-> ([
+i=4:
+	str[4]==] closing. Matches flavor of top of stack, pop.
+	stack-> (
+i=5:
+	str[5]==) closing.
+	stack-> empty
+
+If stack is empty, return true. Else, return false.
+	
+
+*/

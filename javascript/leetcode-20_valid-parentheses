@@ -1,0 +1,35 @@
+/*
+Unoptimized.
+*/
+
+const isValid = function(str) {
+  const stack = []; // not actually a full stack data structure, just an array used as one
+                    // stack[stack.length-1] is top of stack
+
+
+  // Main loop
+  for(let i=0; i<str.length; i++) {
+    if(str[i] === '(' || str[i] === '[' || str[i] === '{' ) {
+      stack.push(str[i])
+    }
+    // else, it's a closing
+    // stack.length!==0: ensures a closing without an opening is false.
+    else if(str[i] === ')' && stack[stack.length-1] === '(' && stack.length!==0) {
+      stack.pop();
+    }
+    else if(str[i] === ']' && stack[stack.length-1] === '[' && stack.length!==0) {
+      stack.pop();
+    }
+    else if(str[i] === '}' && stack[stack.length-1] === '{' && stack.length!==0) {
+      stack.pop();
+    }
+    else {
+          console.log(`i: ${i}`)
+          console.log(stack);
+      return false;
+    }
+    
+  }
+  console.log(stack);
+  return stack.length === 0;
+}

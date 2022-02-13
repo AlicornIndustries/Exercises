@@ -1,0 +1,23 @@
+function spinalCase(str) {
+  return str.replace(/([a-z0-9])([A-Z])/g, '$1 $2').toLowerCase().split(/[ _-]/).join('-')
+}
+
+const output = spinalCase('thisIsSpinalTap');
+console.log(output);
+
+/*
+Split on: space dash underscore lowercase-to-uppercase transition. First 3 easy, last one trickier.
+
+Lowercase-to-uppercase transition: use lookahead.
+/[a-z](?=[A-Z])/ which is [a-z] immediately followed by [A-Z].
+Problem: on its own, split() will remove the delimiter, so thisIsSpinalTap -> [ 'thi', 'I', 'Spina', 'Tap' ]
+Solution: use another lookahead to match on "zero-length string right after a case transition"
+Actually, that gets very messy with offsets.
+
+Hmm. Try replacing the case transition with a space.
+str.replace(/([a-z0-9])([A-Z])/g, '$1 $2')
+--> find case transitions, save in capture groups $1 and $2, so e.g.
+thisIs --> $1=this $2=Is
+Then replace $1$2 with $1 $2 (with a space between)
+
+*/

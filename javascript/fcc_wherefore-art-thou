@@ -1,0 +1,35 @@
+/*ES7: could use Object.entries(collection[i]).every() or .forEach([key,val])
+
+*/
+
+collection = [
+	{ first: "Romeo", last: "Montague" },
+	{ first: "Mercutio", last: null },
+	{ first: "Tybalt", last: "Capulet" }
+]
+
+source = {
+	first: 'Tybalt',
+	last: 'Capulet'
+}
+
+function whatIsInAName(collection,source) {
+  return collection.filter(object => noNoneMatchingPairs(object,source));
+}
+
+// True if there are no key/value pairs in source that do not match a key/value pair in object
+// There can still be "extra" key/value pairs in object that aren't in source
+function noNoneMatchingPairs(object, source) {
+    for(const prop in source) {
+    //console.log(`prop: ${prop} source: ${source[prop]} object: ${object[prop]}`)
+    if(source[prop] !== object[prop]) {
+      return false;
+    }
+  }
+  return true;
+  
+}
+
+whatIsInAName(collection,source);
+
+//console.log(noNoneMatchingPairs({ first: "Tybalt", last: "Capulet" }, { last: "Capulet" }))

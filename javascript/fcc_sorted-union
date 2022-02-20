@@ -1,16 +1,6 @@
 function uniteUnique(...arrs) {
-  const flattened = arrs.flat();
-  const out = [];
-  let existingElements = {}
-
-  flattened.forEach(elem => {
-    if(!existingElements[elem]) {
-      out.push(elem)
-    }
-    existingElements[elem] = 1;
-  })
-
-  return out
+  const set = new Set(arrs.flat());
+  return [...set]
 }
 
 uniteUnique([1, 3, 2], [5, 2, 1, 4], [2, 1]);

@@ -1,0 +1,28 @@
+function uniteUnique(...arrs) {
+  const flattened = arrs.flat();
+  const out = [];
+  let existingElements = {}
+
+  flattened.forEach(elem => {
+    if(!existingElements[elem]) {
+      out.push(elem)
+    }
+    existingElements[elem] = 1;
+  })
+
+  return out
+}
+
+uniteUnique([1, 3, 2], [5, 2, 1, 4], [2, 1]);
+
+/*
+Naive:
+Ex. [1, 3, 2], [5, 2, 1, 4], [2, 1]
+* flatten -> [1,3,2,5,2,1,4,2,1]
+* remove duplicates -> [1,3,2,5,4]
+** Probably a builtin for this, but to do it manually: use hash table
+
+Would probably be more efficient if we did remove dups at the same time as flattening
+
+
+*/

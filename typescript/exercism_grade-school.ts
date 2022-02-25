@@ -5,6 +5,12 @@ Known problems:
 * Similarly, no proper indexing for e.g. "find students in grade 2" without searching whole roster
 * Hard to get from student to student ID number
 
+Finding the best data structure for _classRoster was tricky, and I'm not satisfied with what I have.
+Ideally, I want:
+* Constant time look-up of a specific student by some sort of student ID
+* Easy access to "students in grade X" without iterating across all students
+* Clean support for students moving between grades
+
 */
 
 

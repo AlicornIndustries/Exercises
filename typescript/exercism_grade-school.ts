@@ -1,3 +1,7 @@
+// TODO: add check in GradeSchool.add() to prevent adding a student with the same name as another student
+
+
+
 /*
 
 Finding the best data structure for _classRoster was tricky, and I'm not satisfied with what I have.
@@ -18,7 +22,7 @@ class GradeSchool {
     // We could use a UUID or AtomicInteger?? if we wanted to get funky
     // For now, just an incrementing int.
     // In present state, we don't actually do much with student IDs, but just referring to students
-    // by name and grade means we can't have two Steves.
+    // by name and grade means we can't have two Steves (although tests actually expect there to be only 1)
 
 
     roster() {
@@ -34,12 +38,13 @@ class GradeSchool {
             if(student.grade in out) {
                 out[student.grade].push(student.name)
             } else {
-                out[student.grade] = [].concat(student.name)
+                // (out as any) avoids the implicit 'any' type, but seems awkward
+                (out as any)[student.grade] = [].concat(student.name)
             }
         })
 
         // Sort alphabetically in each grade
-        Object.keys(out).forEach(grade => out[grade].sort())
+        Object.keys(out).forEach(grade => (out as any)[grade].sort())
 
         return out;
     }
@@ -57,6 +62,10 @@ class GradeSchool {
             map(student => student.name).
             sort()
     }
+
+    tester() {
+        console.log(this._classRoster)
+    }
 }
 
 interface Student {
@@ -73,4 +82,5 @@ school.add('Alice',1)
 school.add('Bob',2)
 school.add('Bertha',2)
 school.add('Xerxes',3)
-school.roster()
+//school.tester()
+console.log(school.roster())

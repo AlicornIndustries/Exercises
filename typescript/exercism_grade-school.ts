@@ -1,15 +1,11 @@
 /*
-We could go deep on data structures for the class roster. This is quick-n'-dirty.
-Known problems:
-* Doesn't store the list sorted alphabetically, has to be explicitly sorted each time
-* Similarly, no proper indexing for e.g. "find students in grade 2" without searching whole roster
-* Hard to get from student to student ID number
 
 Finding the best data structure for _classRoster was tricky, and I'm not satisfied with what I have.
 Ideally, I want:
 * Constant time look-up of a specific student by some sort of student ID
 * Easy access to "students in grade X" without iterating across all students
 * Clean support for students moving between grades
+* Some sort of index for fast lookup (this would definitely require extra setup and a more intense structure)
 
 */
 
@@ -18,34 +14,44 @@ class GradeSchool {
 
 
     private _classRoster: StudentByID = {};
-    //private _classRoster = new Map<number,Student>(); // experimented with using a map
     private _nextID: number = 0;
-    // We could use a UUID or AtomicInteger if we wanted to get funky
+    // We could use a UUID or AtomicInteger?? if we wanted to get funky
     // For now, just an incrementing int.
-    // In present state, we don't actually do much with student IDs
+    // In present state, we don't actually do much with student IDs, but just referring to students
+    // by name and grade means we can't have two Steves.
 
 
     roster() {
-        // (I would call this either getRoster or use a proper getter)
-        // Format: [1: ['name of student in grade 1','another student in grade 1], 2:[]]
+        // return format: {1: ['name of student in grade 1','another student in grade 1], 2:[]}
+        /* Essentially: for each student:
+        1. if out has a subarray for student's grade, put them there
+        2. else make a new subarray in out and put student there
 
-        console.log(Object.entries(this._classRoster))
+        */
 
-        // TODO
+        const out: {[key: number]: [string]} = {}
+        Object.values(this._classRoster).forEach(student => {
+            if(student.grade in out) {
+                out[student.grade].push(student.name)
+            } else {
+                out[student.grade] = [].concat(student.name)
+            }
+        })
 
+        // Sort alphabetically in each grade
+        Object.keys(out).forEach(grade => out[grade].sort())
 
+        return out;
     }
 
     add(name: string, grade: number) {
        this._classRoster[this._nextID] = {'name': name, 'grade': grade}
-       //this._classRoster.set(this._nextID,{'name':name,'grade':grade}) // the map way to do it
        this._nextID++;
     }
 
     grade(num: number) {
-        // Return alphabetized array of students in grade num
+        // Return alphabetized array of student (names) in grade num
         // Naive solution: loop over _classRoster
-        // Looks like return format desired is just array of students' names
         return Object.values(this._classRoster).
             filter(student => student['grade'] === num).
             map(student => student.name).
@@ -68,8 +74,3 @@ school.add('Bob',2)
 school.add('Bertha',2)
 school.add('Xerxes',3)
 school.roster()
-
-
-// const myMap = new Map();
-// myMap.set('100',{name: 'Alice', grade: 2})
-// console.log(myMap)

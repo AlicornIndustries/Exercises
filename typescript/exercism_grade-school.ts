@@ -1,7 +1,3 @@
-// TODO: add check in GradeSchool.add() to prevent adding a student with the same name as another student
-
-
-
 /*
 
 Finding the best data structure for _classRoster was tricky, and I'm not satisfied with what I have.
@@ -14,7 +10,7 @@ Ideally, I want:
 */
 
 
-class GradeSchool {
+export class GradeSchool {
 
 
     private _classRoster: StudentByID = {};
@@ -22,15 +18,12 @@ class GradeSchool {
     // We could use a UUID or AtomicInteger?? if we wanted to get funky
     // For now, just an incrementing int.
     // In present state, we don't actually do much with student IDs, but just referring to students
-    // by name and grade means we can't have two Steves (although tests actually expect there to be only 1)
-
+    // by name and grade would cause problems later if we wanted to add support for multiple kids with same name
 
     roster() {
-        // return format: {1: ['name of student in grade 1','another student in grade 1], 2:[]}
         /* Essentially: for each student:
         1. if out has a subarray for student's grade, put them there
         2. else make a new subarray in out and put student there
-
         */
 
         const out: {[key: number]: [string]} = {}
@@ -50,21 +43,39 @@ class GradeSchool {
     }
 
     add(name: string, grade: number) {
-       this._classRoster[this._nextID] = {'name': name, 'grade': grade}
-       this._nextID++;
+        const id: number = this.getStudentsID(name)       
+        if(id >= 0) {
+            // If student with name already in roster, change their grade instead
+            this._classRoster[id]['grade'] = grade
+        } else {
+            // Create a new student
+            this._classRoster[this._nextID] = {'name': name, 'grade': grade}
+            this._nextID++
+        }
     }
 
     grade(num: number) {
         // Return alphabetized array of student (names) in grade num
-        // Naive solution: loop over _classRoster
         return Object.values(this._classRoster).
             filter(student => student['grade'] === num).
             map(student => student.name).
             sort()
     }
+    
+    getStudentsID(name: string): number {
+        // Given the data structure, I don't think we can do this without O(n) looping over each student
+        // (if we had used name as a "primary key" instead of a unique student ID, we could)
 
-    tester() {
-        console.log(this._classRoster)
+        // -1 if student with name not on _classRoster
+        const student = Object.entries(this._classRoster).find(student => student[1]['name'] === name)
+        // Another flaw of my data structure: this isn't really a Student, as defined by the interface
+        // it's an array [studentID, {name,grade}] in other words, [studentID, student]
+        if(student !== undefined) {
+            return +student[0] // learned that object keys are always strings, hence conversion to number
+        }
+        else {
+            return -1
+        }
     }
 }
 
@@ -75,12 +86,3 @@ interface Student {
 interface StudentByID {
     [key: number]: Student
 }
-
-console.clear()
-const school = new GradeSchool();
-school.add('Alice',1)
-school.add('Bob',2)
-school.add('Bertha',2)
-school.add('Xerxes',3)
-//school.tester()
-console.log(school.roster())

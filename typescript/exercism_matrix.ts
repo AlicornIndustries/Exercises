@@ -1,31 +1,15 @@
 /*
-TODO: implement columns
-
-
-*/
-
-
-/*
-Matrix('1 2\n10 20') -> Matrix.rows[1] is [1 2 20] (1-indexed)
-
-Add in one-indexing later.
-
-Matrix('1 2 3\n4 5 6\n7 8 9\n8 7 6') -> (before 1-indexing)
-rows -> [[1,2,3],[4,5,6],[7,8,9]]
-
-
+TODO: Implement columns
 */
 
 class Matrix {
-    //#str: string;
-    //#mat: number[] = [];
-    #mat: string[][] = [];
+
+    #mat: number[][] = [];
 
     constructor(str: string) {
-        //this.#str = str;
 
-        // First split into rows, then split rows on spaces.
-        this.#mat = str.split('\n').map(elem => elem.split(' '))
+        // First split into rows, then split rows on spaces, then convert strings to numbers
+        this.#mat = str.split('\n').map(elem => elem.split(' ')).map(row => row.map(Number))
 
         console.log(this.#mat);
 
@@ -41,9 +25,8 @@ class Matrix {
         
     }
 
-    get rows(): string[][] {
-        const out: string[][] = [];
-        out.push([]); // kludge to make it 1-indexed
+    get rows(): number[][] {
+        const out: number[][] = [];
 
         for(let y=0; y<this.#mat.length; y++) {
             out.push(this.#mat[y])
@@ -52,14 +35,14 @@ class Matrix {
         return out;
     }
 
-    get columns(): string[][] {
-        const out: string[][] = [];
-        out.push([]); // kludge to make it 1-indexed
+    get columns(): number[][] {
+        const out: number[][] = [];
 
 
-        return out;    }
+        return out;
+    }
 }
 
 console.clear()
-let m = new Matrix('1 2\n3 4\n5 6')
-console.log(m.rows)
+let m = new Matrix('1 2\n3 4')
+console.log(m.rows[1])

@@ -1,5 +1,6 @@
 /*
-TODO: Implement columns
+Matrices have no "holes". They can be non-square, but always mxn with
+no "empty"/undefined spaces
 */
 
 class Matrix {
@@ -9,40 +10,34 @@ class Matrix {
     constructor(str: string) {
 
         // First split into rows, then split rows on spaces, then convert strings to numbers
+        /* TODO: optimize. We can save loops by just going over the string once, checking
+        as we go for a ' ' or a '\n' (instead of doing them separately).
+        That may require some assumptions e.g. square matrix
+        */
         this.#mat = str.split('\n').map(elem => elem.split(' ')).map(row => row.map(Number))
-
-        console.log(this.#mat);
-
-        //const r = str.split('\n').map(elem => elem.split(' '))
-        //console.log(r);
-
-        // for(let y=0; y<r.length; y++) {
-        //     for(let x=0; x<r[y].length; x++) {
-        //         console.log(`r[${y}][${x}]: ${r[y][x]}`)
-        //     }
-        // }
-
-        
     }
 
     get rows(): number[][] {
-        const out: number[][] = [];
-
-        for(let y=0; y<this.#mat.length; y++) {
-            out.push(this.#mat[y])
-        }
-        
-        return out;
+        return this.#mat
     }
 
     get columns(): number[][] {
         const out: number[][] = [];
 
-
+        for(let x=0; x<this.#mat[0].length; x++) {
+            // Equivalent:
+            // out.push(
+            //     this.#mat.map(function(value,index) {
+            //         return value[x]
+            //     })
+            // )
+            out.push(this.#mat.map(row => row[x]))
+        }
         return out;
     }
 }
 
 console.clear()
-let m = new Matrix('1 2\n3 4')
-console.log(m.rows[1])
+let m = new Matrix('1 2 3\n4 5 6')
+//console.log(m.rows)
+console.log(m.columns)

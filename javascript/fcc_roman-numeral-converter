@@ -1,0 +1,38 @@
+/*
+Convert ints from 1-3999 to Roman numerals.
+Essentially look at powers of ten: 1s, 10s, 100s, 1000s; handle each separately.
+A few ways we could do that:
+* Parse int as string, check e.g. intAsString[1]
+* start from the largest "chunk" of Roman (e.g. V and IX are both chunks) and work down
+
+
+We'll do the second. The chunks are basically just explicit statements of the subtractive principle & all the permutations Roman can take:
+sym = I,IV,V,IX,X,XL,L,XC,C,CD,D,CM,M // symbol strings
+val = 1,4,5,9,10,40,50,90,100,400,500,900,1000 // numeric values of the symbols
+13 chunks. Loop down from M to I (so i=12, i--)
+
+*/
+
+function convertToRoman(num) {
+  if(num<1 || num>3999) {
+    throw new Error(`Invalid input: num ${num} outside range 1:3999`);
+  }
+  let deci = num; // make a copy so we don't mutate
+  let out = [];
+  
+  const sym = ['I','IV','V','IX','X','XL','L','XC','C','CD','D','CM','M'];
+  const val = [1,4,5,9,10,40,50,90,100,400,500,900,1000]; // sym[3] represents val[3], etc.
+  
+  let i=sym.length-1;
+  while(deci>0) {
+    let div = Math.floor(deci/val[i]);
+    deci = deci%val[i]; // 'chop off' the top
+    
+    console.log(`div: ${div}, deci: ${deci}`)
+    if(div>0) {
+      out.push(sym[i].repeat(div));
+    }
+    i--;
+  }
+  return out.join('');
+}

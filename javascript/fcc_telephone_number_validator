@@ -1,0 +1,38 @@
+/*
+Naive approach: a bunch of regex
+This is not very efficient. You should be able to do this in O(n) time?
+Potential optimizations:
+Loop through once, starting at str[1].
+* if str[1]==' ' & str[0]!=1, fail (must start with country code 1 if it has a country code)
+* Maybe start by checking country code first, then branch from there into two loops with hardcoded
+
+Ah, big brain time. Just strip out parens/dashes/spaces, then loop through once.
+
+Future:
+* Handling for other country codes.
+
+Known weird formats this lets through:
+(1 555 555 5555 : unmatched parens
+555    555 5555 : extra spaces
+
+*/
+
+
+//const countryCodes = ['1']; // TODO: for future expansion
+
+function telephoneCheck(str) {
+  // TODO
+  // // Can only start with num or (
+  // if( !(/^[0-9]/.test(str))  ) {
+  //   return false;
+  // }
+  
+  const phone = str.replace(/[() \-]/g,'') // replaceAll wasn't implemented yet
+  
+  // TODO: replace '1' below with parametrized country codes.
+  return /^1?[0-9]{10}$/.test(phone) // 2225551234 or 12225551234
+}
+
+const a = telephoneCheck("(605 475 6961)");
+console.log(a)
+

@@ -1,19 +1,22 @@
 /*
-Naive approach: a bunch of regex
-This is not very efficient. You should be able to do this in O(n) time?
-Potential optimizations:
-Loop through once, starting at str[1].
-* if str[1]==' ' & str[0]!=1, fail (must start with country code 1 if it has a country code)
-* Maybe start by checking country code first, then branch from there into two loops with hardcoded
-
-Ah, big brain time. Just strip out parens/dashes/spaces, then loop through once.
+Naive approach: regex.
 
 Future:
 * Handling for other country codes.
 
-Known weird formats this lets through:
-(1 555 555 5555 : unmatched parens
-555    555 5555 : extra spaces
+Problematic test cases that should  fail are mismatched/misplaced parens.
+(6054756961)
+555)-555-5555 : unclosed parens
+(555-555-5555
+
+Only valid way to have parens is if they're wrapped around the first 3-digit block.
+OR || is one way to do it. Perhaps not the cleanest.
+Basically: does it match the no-parens formats (with spaces, dashes, no spaces) or a paren format.
+
+Regex should short-circuit out when it hits the start of the first three-digit block if it's not the right one
+of those two formats, so we're ideally only redoing the country code part.
+Tradeoff a little bit of efficiency for readability.
+
 
 */
 
@@ -21,16 +24,8 @@ Known weird formats this lets through:
 //const countryCodes = ['1']; // TODO: for future expansion
 
 function telephoneCheck(str) {
-  // TODO
-  // // Can only start with num or (
-  // if( !(/^[0-9]/.test(str))  ) {
-  //   return false;
-  // }
-  
-  const phone = str.replace(/[() \-]/g,'') // replaceAll wasn't implemented yet
-  
-  // TODO: replace '1' below with parametrized country codes.
-  return /^1?[0-9]{10}$/.test(phone) // 2225551234 or 12225551234
+  return /^1? ?[0-9]{3}[ -]?[0-9]{3}[ -]?[0-9]{4}$/.test(str) ||
+    /^1? ?\([0-9]{3}\)[ -]?[0-9]{3}[ -]?[0-9]{4}$/.test(str);
 }
 
 const a = telephoneCheck("(605 475 6961)");

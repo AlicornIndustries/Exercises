@@ -1,3 +1,20 @@
+/*-----------------------------------
+NEXT STEPS:
+Refactor internal data structure for cash into the 
+cidNew = {
+  PENNY: 101
+  ,NICKEL: 205
+  etc
+}
+object.
+Write helper functions for converting to/from format.
+
+
+-----------------------------------*/
+
+
+
+
 /*
 Here be absolute spaghetti code.
 FUTURE: more elegant handling of dollars/cents.

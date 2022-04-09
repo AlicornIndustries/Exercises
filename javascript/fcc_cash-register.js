@@ -27,21 +27,6 @@ const denoms = Object.freeze({
   ,"ONE HUNDRED": 10000
 })
 
-/*-----------------------------------
-NEXT STEPS:
-Refactor internal data structure for cash into the 
-cidNew = {
-  PENNY: 101
-  ,NICKEL: 205
-  etc
-}
-object.
-Write helper functions for converting to/from format.
-
-
------------------------------------*/
-
-
 /* Helper functions */
 
 function formatCid(cid) {
@@ -51,60 +36,90 @@ function formatCid(cid) {
   return drawer;
 }
 
-// DELETEME
-//let cid = [["PENNY", 1.01], ["NICKEL", 2.05], ["DIME", 3.1], ["QUARTER", 4.25], ["ONE", 90], ["FIVE", 55], ["TEN", 20], ["TWENTY", 60], ["ONE HUNDRED", 100]];
-//let drawer = formatCid(cid);
-//console.log(drawer);
-
 function totalCents(drawer) {
   // FUTURE: move to method on a Drawer object?
   return Object.values(drawer).reduce((a,b) => a+b);
 }
 
+/*-----------------------------------
+NEXT STEPS:
+Generalize the nickel part of makeChange into a function
+-----------------------------------*/
+
+function changeForDenom(centsDue,denom,centsDenom) {
+  /* TESTS: concept is:
+  // changeForDenom(12,"NICKEL",10) is change for 12 cents using 2 nickels
+  // return: [2 remainingCentsDue, 10 cents in nickels used]
+  // changeForDenom(12,"NICKEL",15) ->
+  // return: [2 remainingCentsDue, 10 cents in nickels used]
+  changeForDenom(7,"NICKEL",10) -> [2,5]
+  */
+  if(centsDue<=0) {
+    // TODO
+  }
+  
+  let changeOut = 0;
+  let remainingCentsDue = 0;
+  
+  // if we owe a denom and have some of that denom in drawer:
+  if(centsDue>=centsDenom) {
+    // e.g. 17 centsDue, 10 drawer.NICKEL, 17-10 = 7
+    changeOut = centsDenom;
+    remainingCentsDue = centsDue-centsDenom;
+  }
+  else {
+    // e.g. 7 centsDue, 10 drawer.NICKEL -> 7-5=2 cents left, 5 cents in changeOut
+    // 7%5=2
+    
+    // 12 centsDue, 15 drawer.NICKEL -> 12-10=2 cents left, 10 cents in changeOut
+    // 12%5 = 2
+    // centsDue%denoms.NICKEL = remainingCentsDue
+    // changeOut.NICKEL = 12-2 = originalCentsDue-remainingCentsDue
+    changeOut = centsDue - (centsDue % denoms[denom]);
+    remainingCentsDue = centsDue % denoms[denom]
+  }
+  
+  return [remainingCentsDue,changeOut]
+}
+
+
 function makeChange(centsDue,drawer) {
   if(centsDue > totalCents(drawer)) {
     return {status: "INSUFFICIENT_FUNDS",change: []}
   }
+  if(centsDue === 0) {
+    //TODO
+  }
   
   // Fill this out with amounts due as we go.
   let changeOut = {};
-
-  if(centsDue>0) {
-    if(centsDue>=drawer.NICKEL) {
-      // e.g. 17 centsDue, 10 drawer.NICKEL, 17-10 = 7
-      changeOut.NICKEL = drawer.NICKEL;
-      centsDue-=drawer.NICKEL;
-    }
-    else {
-      // e.g. 7 centsDue, 10 drawer.NICKEL -> 7-5=2 cents left, 5 cents in changeOut
-      // 7%5=2
-      
-      // 12 centsDue, 15 drawer.NICKEL -> 12-10=2 cents left, 10 cents in changeOut
-      // 12%5 = 2
-      // centsDue%denoms.NICKEL = remainingCentsDue
-      // changeOut.NICKEL = 12-2 = originalCentsDue-remainingCentsDue
-      
-      changeOut.NICKEL = centsDue - (centsDue % denoms.NICKEL)
-      centsDue = centsDue % denoms.NICKEL;
-    }
   
-  }
-
-
-
-  
-  // If we owe pennies and have enough pennies in the drawer:
-  if(centsDue>0 && drawer.PENNY>=centsDue) {
-    // Add the remaining centsDue to the change we return
+  // Go down list of denoms
+  //[centsDue,changeOut[denom]] = changeForDenom(centsDue,denom,drawer.Denom)
+  [centsDue,changeOut["ONE HUNDRED"]] = changeForDenom(centsDue,"ONE HUNDRED",drawer["ONE HUNDRED"]);
+  [centsDue,changeOut["TWENTY"]] = changeForDenom(centsDue,"TWENTY",drawer["TWENTY"]);
+  [centsDue,changeOut["TEN"]] = changeForDenom(centsDue,"TEN",drawer["TEN"]);
+  [centsDue,changeOut["FIVE"]] = changeForDenom(centsDue,"FIVE",drawer["FIVE"]);
+  [centsDue,changeOut["ONE"]] = changeForDenom(centsDue,"ONE",drawer["ONE"]);
+  [centsDue,changeOut["QUARTER"]] = changeForDenom(centsDue,"QUARTER",drawer["QUARTER"]);
+  [centsDue,changeOut["DIME"]] = changeForDenom(centsDue,"DIME",drawer["DIME"]);
+  [centsDue,changeOut["NICKEL"]] = changeForDenom(centsDue,"NICKEL",drawer["NICKEL"]);
+  //console.log(centsDue)
+  //console.log(changeOut);
+  if(centsDue>0 && drawer["PENNY"]>=centsDue) {
     changeOut.PENNY = centsDue;
     centsDue = 0;
   }
   return changeOut;
 }
 
-let cid = [["PENNY", 0.20], ["NICKEL", 0.10]];
+let cid = [["PENNY", 1.01], ["NICKEL", 2.05], ["DIME", 3.1], ["QUARTER", 4.25], ["ONE", 90], ["FIVE", 55], ["TEN", 20], ["TWENTY", 60], ["ONE HUNDRED", 100]];
 let drawer = formatCid(cid);
-console.log(makeChange(12,drawer))
+console.log(drawer);
+let centsDue = 47;
+//let out = changeForDenom(centsDue,"DIME",drawer.DIME)
+let out = makeChange(centsDue,drawer);
+console.log(out);
 
 
 // cashToDenom("NICKEL",0.25) --> 5 nickels

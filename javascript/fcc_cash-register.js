@@ -1,18 +1,10 @@
-/*
-Here be absolute spaghetti code.
-FUTURE: refactor enums
+/*-----------------------------------
+NEXT STEPS:
+* Convert makeChange into a cleaner loop.
+FUTURE: refactor enums, optimize
 More validation in general (e.g. prevent having fractional nickels)
+-----------------------------------*/
 
-Roughing out logic:
-* if price > totalCents cid: INSUFFICIENT_FUNDS
-* if price == totalCents cid: CLOSED
-* otherwise:
-let changeDueCents = cash-price
-convert changeDueCents into coins // hard part
-Probably use a for loop or switch, going "down the list" of denoms. Modulo?
-
-
-*/
 
 // Enums (real enums are a TypeScript thing, alas)
 const denoms = Object.freeze({
@@ -27,6 +19,11 @@ const denoms = Object.freeze({
   ,"ONE HUNDRED": 10000
 })
 
+// FUTURE: replace this with cleaner enum? Combine with denoms? Better ways to handle sorting?
+const denomList = Object.freeze(
+  ["ONE HUNDRED","TWENTY","TEN","FIVE","ONE","QUARTER","DIME","NICKEL","PENNY"]
+  );
+
 /* Helper functions */
 
 function cidToDrawer(cid) {
@@ -36,24 +33,30 @@ function cidToDrawer(cid) {
   return drawer;
 }
 
+function drawerToCid(drawer) {
+  // Returns largest to smallest denom (in dollars),
+  // omitting denoms with 0 cents
+  let cid = [];
+  denomList.forEach( (d) => {
+    if(drawer[d]>0) {
+      //console.log(`${d} ${drawer[d]}`)
+      cid.push([d, centsToDollars(drawer[d])])
+    }
+  })
+  return cid;
+}
+
 function dollarsToCents(dollars) {
   return Math.round(dollars*100)
+}
+function centsToDollars(cents) {
+  return cents/100;
 }
 
 function totalCents(drawer) {
   // FUTURE: move to method on a Drawer object?
   return Object.values(drawer).reduce((a,b) => a+b);
 }
-
-// cashToDenom("NICKEL",0.25) --> 5 nickels
-/*function cashToDenom(denom,dollars) {
-//	return (dollars/denoms[denom])*100
-}*/
-
-/*-----------------------------------
-NEXT STEPS:
-Convert makeChange into a cleaner loop.
------------------------------------*/
 
 function changeForDenom(centsDue,denom,centsDenom) {
   /* TESTS: concept is:
@@ -95,10 +98,10 @@ function changeForDenom(centsDue,denom,centsDenom) {
 
 function makeChange(centsDue,drawer) {
   if(centsDue > totalCents(drawer)) {
-    return "INSUFFICIENT_FUNDS"
+    return "INSUFFICIENT_FUNDS";
   }
-  if(centsDue === 0) {
-    //return 
+  else if(centsDue === totalCents(drawer)) {
+    return "CLOSED";
   }
   
   // Fill this out with amounts due as we go.
@@ -121,23 +124,38 @@ function makeChange(centsDue,drawer) {
     changeOut.PENNY = remainingCentsDue;
     remainingCentsDue = 0;
   }
+  if(remainingCentsDue>0) {
+    // could not make exact change
+    return "INSUFFICIENT_FUNDS";
+  }
+
   return changeOut;
 }
 
-let cid = [["PENNY", 1.01], ["NICKEL", 2.05], ["DIME", 3.1], ["QUARTER", 4.25], ["ONE", 90], ["FIVE", 55], ["TEN", 20], ["TWENTY", 60], ["ONE HUNDRED", 100]];
-let drawer = cidToDrawer(cid);
-console.log(drawer);
-let centsDue = 47;
-//let out = changeForDenom(centsDue,"DIME",drawer.DIME)
-let out = makeChange(centsDue,drawer);
-console.log(out);
-
-
-
-
-
 function checkCashRegister(price, cash, cid) {
   const drawer = cidToDrawer(cid);
-  const centsDue = dollarsToCents(price);
-
+  const centsDue = dollarsToCents(cash-price);
+  
+  // FUTURE: cleaner handling. I'd like changeDrawer to be consistently a drawer obj.
+  const changeDrawer = makeChange(centsDue,drawer);
+  if(changeDrawer=="INSUFFICIENT_FUNDS") {
+    return {status: "INSUFFICIENT_FUNDS", change: []}
+  }
+  else if(changeDrawer=="CLOSED") {
+    // We *don't* reorder the cid if closed.
+    return {status: "CLOSED", change: cid}
+  }
+  else {
+    return{status: "OPEN", change: drawerToCid(changeDrawer)}
+  }
 }
+
+/* Example */
+/*
+let cid = [["PENNY", 1.01], ["NICKEL", 2.05], ["DIME", 3.1], ["QUARTER", 4.25], ["ONE", 90], ["FIVE", 55], ["TEN", 20], ["TWENTY", 60], ["ONE HUNDRED", 100]];
+let price = 19.5;
+let cash = 20;
+let out = checkCashRegister(price,cash,cid)
+console.log(out);
+*/
+

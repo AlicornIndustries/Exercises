@@ -15,10 +15,10 @@ Naive: store intermediate representation as a string?
 
 */
 function getDecimalValue(node: ListNode): number {
-    let str = node.val.toString();
-    while(node.next) {
+    let str = '';
+    while(node) {
+        str+=node.val;
         node = node.next;
-        str+=node.val.toString();
     }
     return parseInt(str,2);
 }

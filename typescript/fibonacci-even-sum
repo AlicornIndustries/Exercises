@@ -1,0 +1,28 @@
+/*
+Sum of even Fibonnaci numbers less than a given value
+Dynamic programming.
+*/
+
+function fibEvenSum(m: number) {
+  let a = 1;
+  let b = 1;
+  let sum = 0;
+
+  while(b<=m) {
+    [b,a] = [b+a,b];
+    //console.log(b);
+
+    if(b%2===0 && b<m) {
+      sum += b;
+    }
+  }
+
+  return sum;
+
+}
+
+console.clear();
+
+let m = 10_000_000
+let sum = fibEvenSum(m);
+console.log(`sum: ${sum}`);

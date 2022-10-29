@@ -18,4 +18,7 @@ function checkIfExist(arr: number[]): boolean {
 Kinda like 2sum, store things along the way.
 Places to improve: not happy about the arr[i]/2 part, feels like there should be a more elegant approach.
 
+****
+This would be a good place to use Set.
+
 */
